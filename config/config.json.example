@@ -1,0 +1,11 @@
+{
+    "audio_model": "https://models.silero.ai/models/tts/en/v3_en.pt",
+    "local_tts": "/tmp/tts.pt",
+    "speaker": "en_67",
+    "model_path": "ggml-vicuna-13b-4bit-rev1.bin",
+    "automation_file": "",
+    "token": "",
+    "device_id": "",
+    "threads": 6,
+    "media_file": "/tmp/speak{n}.wav"
+}
