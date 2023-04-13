@@ -12,10 +12,10 @@ import gc
 
 config = Config('./config/config.json')
 
-TRIGGER_ALIAS='automation.play_media_home'
+TRIGGER_ALIAS=f"automation.{config['automation_name'].replace('-', '_')}"
 AUTOMATION_TEMPLATE=f"""
 - id: '1681120728300'
-  alias: play-media-home
+  alias: {config['automation_name']}
   description: ''
   trigger: []
   condition:
@@ -153,7 +153,7 @@ def text_to_speech(text: str):
     model = torch.package.PackageImporter(config['local_tts']).load_pickle("tts_models", "model")
     model.to(device)
     for n, i in enumerate(range(0, len(text), 900)):
-        file = model.save_wav(text=text[i:i+900], sample_rate=24000, speaker=config['speaker'])
+        file = model.save_wav(text=text[i:i+900], sample_rate=48000, speaker=config['speaker'])
         shutil.move(file, config['media_file'].format(n=n))
     return n
 
