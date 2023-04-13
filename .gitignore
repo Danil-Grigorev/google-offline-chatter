@@ -1,3 +1,4 @@
 # Ignore config.json file
 __pycache__
 config/config.json
+.venv
