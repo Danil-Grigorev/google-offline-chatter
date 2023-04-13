@@ -10,10 +10,10 @@ import re
 import speech_recognition as sr
 import gc
 
-config = Config('./config/config.json')
+config = Config('./config.json')
 
-TRIGGER_ALIAS=f"automation.{config['automation_name'].replace('-', '_')}"
-AUTOMATION_TEMPLATE=f"""
+TRIGGER_ALIAS = f"automation.{config['automation_name'].replace('-', '_')}"
+AUTOMATION_TEMPLATE = f"""
 - id: '1681120728300'
   alias: {config['automation_name']}
   description: ''
@@ -29,7 +29,7 @@ AUTOMATION_TEMPLATE=f"""
   mode: single
 """
 
-MEDIA_TEMPLATE="""  - service: media_player.play_media
+MEDIA_TEMPLATE = """  - service: media_player.play_media
     target:
       entity_id: media_player.speaker
     data:
@@ -54,6 +54,28 @@ MEDIA_TEMPLATE="""  - service: media_player.play_media
       - media_player.speaker
       from: playing
       to: paused"""
+
+CONFIGURATION_TEMPLATE = f"""
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+homeassistant:
+  media_dirs:
+    media: /config/media/
+  external_url: "http://{config['local_ip']}:8123"
+  internal_url: "http://{config['local_ip']}:8123"
+"""
 
 class AIModelInstance:
     _instance = None
@@ -152,6 +174,8 @@ def text_to_speech(text: str):
     device = torch.device('cpu')
     model = torch.package.PackageImporter(config['local_tts']).load_pickle("tts_models", "model")
     model.to(device)
+    if not os.path.isdir(os.path.dirname(config['media_file'])):
+        os.mkdir(os.path.dirname(config['media_file']))
     for n, i in enumerate(range(0, len(text), 900)):
         file = model.save_wav(text=text[i:i+900], sample_rate=48000, speaker=config['speaker'])
         shutil.move(file, config['media_file'].format(n=n))
@@ -197,6 +221,10 @@ def process_query(llm: Llama, input_text: str, temperature: float) -> str:
     media_samples = '\n'.join((MEDIA_TEMPLATE.format(n=n) for n in range(samples+1)))
     with open(config['automation_file'], 'w') as query_file:
         query_file.write(AUTOMATION_TEMPLATE.format(media_templates=media_samples))
+
+    configuration_file_path = os.path.join(os.path.dirname(config['automation_file']), 'configuration.yaml')
+    with open(configuration_file_path, 'w') as config_file:
+        config_file.write(CONFIGURATION_TEMPLATE)
 
     # Reload the configuration in home assistant and trigger the google home in home assistant
     headers = {'Authorization': f'Bearer {config["token"]}'}

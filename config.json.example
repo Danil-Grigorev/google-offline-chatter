@@ -8,5 +8,6 @@
     "token": "",
     "device_id": "",
     "threads": 6,
-    "media_file": "/tmp/speak{n}.wav"
+    "local_ip": "192.168.x.x"
+    "media_file": "/config/media/speak{n}.wav"
 }
