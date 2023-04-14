@@ -2,7 +2,7 @@
     "audio_model": "https://models.silero.ai/models/tts/en/v3_en.pt",
     "local_tts": "/tmp/tts.pt",
     "speaker": "en_67",
-    "model_path": "ggml-vicuna-13b-4bit-rev1.bin",
+    "model_path": "./models/ggml-vicuna-13b-4bit-rev1.bin",
     "automation_file": "./home-assistant/config/automations.yaml",
     "automation_name": "play-media-home",
     "token": "",
